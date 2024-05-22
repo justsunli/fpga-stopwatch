@@ -17,28 +17,24 @@ wire adj;
 // Instantiate debouncers for each input
 debouncer db_reset (
     .clk(clk),
-    .reset(raw_reset),
     .noisy(raw_reset),
     .debounced(reset)
 );
 
 debouncer db_pause (
     .clk(clk),
-    .reset(raw_reset),
     .noisy(raw_pause),
     .debounced(pause)
 );
 
 debouncer db_sel (
     .clk(clk),
-    .reset(raw_reset),
     .noisy(raw_sel),
     .debounced(sel)
 );
 
 debouncer db_adj (
     .clk(clk),
-    .reset(raw_reset),
     .noisy(raw_adj),
     .debounced(adj)
 );
@@ -48,17 +44,21 @@ wire enable_pause;
 wire enable_count;
 wire [5:0] seconds;
 wire [3:0] minutes;
-wire [3:0] paused_output;
 wire [3:0] minutes_tens;
 wire [3:0] minutes_units;
 wire [3:0] seconds_tens;
 wire [3:0] seconds_units;
+
+wire [3:0] paused_output;
+
 
 // Split minutes and seconds into tens and units
 assign minutes_tens = minutes / 10;
 assign minutes_units = minutes % 10;
 assign seconds_tens = seconds / 10;
 assign seconds_units = seconds % 10;
+
+// clock divider
 
 // Instantiate the arbiter
 arbiter arbiter_inst (
@@ -79,18 +79,9 @@ paused paused_inst (
 
 // Instantiate counting state module without adjustment
 counting counting_inst (
-    .clk(clk),
+    .clk(clk), // pass in 1Hz clock
+    .reset(reset),
     .enable(enable_count),
-    .seconds(seconds),
-    .minutes(minutes)
-);
-
-// Instantiate counting state module with adjustment
-counting counting_inst (
-    .clk(clk),
-    .enable(enable_count),
-    .sel(sel),
-    .adj(adj),
     .seconds(seconds),
     .minutes(minutes)
 );
