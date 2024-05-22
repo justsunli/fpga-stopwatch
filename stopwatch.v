@@ -39,6 +39,8 @@ debouncer db_adj (
     .debounced(adj)
 );
 
+
+
 // Internal signals
 wire enable_pause;
 wire enable_count;
@@ -59,6 +61,14 @@ assign seconds_tens = seconds / 10;
 assign seconds_units = seconds % 10;
 
 // clock divider
+clock clock_div(
+    .clk(clk),
+    .reset(reset),
+    .2_clk(2hz_clock), 
+    .1_clk(1hz_clock), 
+    .fast_clk(fast_clock), 
+    .blink_clk(blink_clock)
+);
 
 // Instantiate the arbiter
 arbiter arbiter_inst (
@@ -78,8 +88,9 @@ paused paused_inst (
 );
 
 // Instantiate counting state module without adjustment
+// with adjustment, passing in also the sel and adj switches, and also clocks
 counting counting_inst (
-    .clk(clk), // pass in 1Hz clock
+    .clk(1hz_clk), // pass in 1Hz clock
     .reset(reset),
     .enable(enable_count),
     .seconds(seconds),
@@ -88,7 +99,7 @@ counting counting_inst (
 
 // Instantiate display controller
 display_controller display_controller_inst (
-    .clk(clk),
+    .clk(fast_clk),
     .reset(reset),
     .minutes_tens(minutes_tens),
     .minutes_units(minutes_units),

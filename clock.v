@@ -13,7 +13,7 @@ reg [31:0] fast_count = 0;
 reg [31:0] blink_count = 0;
 
 // 2 Hz clock
-always @(posedge clk) begin
+always @(posedge clk or posedge reset) begin
     if (reset == 1) 
     begin
         2_count <= 0;
