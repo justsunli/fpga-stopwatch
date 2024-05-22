@@ -1,4 +1,4 @@
-module top (
+module stopwatch (
     input wire clk,
     input wire raw_reset,   // Noisy reset button input
     input wire raw_pause,   // Noisy pause button input
@@ -75,6 +75,14 @@ paused paused_inst (
     .clk(clk),
     .enable(enable_pause),
     .paused_output(paused_output)
+);
+
+// Instantiate counting state module without adjustment
+counting counting_inst (
+    .clk(clk),
+    .enable(enable_count),
+    .seconds(seconds),
+    .minutes(minutes)
 );
 
 // Instantiate counting state module with adjustment

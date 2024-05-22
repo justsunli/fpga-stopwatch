@@ -1,10 +1,10 @@
-module display_controller(
+module display(
   input [3:0] digit, 
   output [6:0] cathode
 )
   reg [6:0] store_cathode;
   // takes in a digit and display it using cathode representation
-  
+
   always @(*) begin
     case(digit)
     4'b0000: store_cathod = 7'b0000001; // "0"  
