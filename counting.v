@@ -2,7 +2,7 @@ module counting (
     input wire clk,
     input wire enable,
     output reg [5:0] seconds,  // 6-bit for seconds (0-59)
-    output reg [3:0] minutes   // 4-bit for minutes (0-9)
+    output reg [5:0] minutes   // 4-bit for minutes (0-59)
 );
 
 always @(posedge clk) begin
