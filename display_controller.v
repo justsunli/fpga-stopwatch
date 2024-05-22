@@ -6,18 +6,11 @@ module display_controller (
     input wire [3:0] seconds_tens,
     input wire [3:0] seconds_units,
     output reg [3:0] anode,
-    output wire [6:0] segments
+    output reg [6:0] segments
 );
 
     reg [1:0] digit_select;
     reg [3:0] digit;
-    wire [6:0] cathode;
-
-    // Instantiate the display module
-    display display_inst (
-        .digit(digit),
-        .cathode(cathode)
-    );
 
     // Multiplexing between the four digits
     always @(posedge clk or posedge reset) begin
@@ -47,7 +40,21 @@ module display_controller (
         end
     end
 
-    // Drive the segments using the cathode output from the display module
-    assign segments = cathode;
+    // Segment encoding
+    always @(*) begin
+        case (digit)
+            4'd0: segments = 7'b1000000; // 0
+            4'd1: segments = 7'b1111001; // 1
+            4'd2: segments = 7'b0100100; // 2
+            4'd3: segments = 7'b0110000; // 3
+            4'd4: segments = 7'b0011001; // 4
+            4'd5: segments = 7'b0010010; // 5
+            4'd6: segments = 7'b0000010; // 6
+            4'd7: segments = 7'b1111000; // 7
+            4'd8: segments = 7'b0000000; // 8
+            4'd9: segments = 7'b0010000; // 9
+            default: segments = 7'b1111111; // Blank
+        endcase
+    end
 
 endmodule

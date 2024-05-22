@@ -27,7 +27,7 @@ always @(posedge clk or posedge reset) begin
     end
 end
 
-// 1 Hz clock
+// 1 Hz clock - 1 cycle per seconds
 always @(posedge clk) begin
     if (reset == 1) 
     begin
