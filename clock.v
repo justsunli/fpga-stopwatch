@@ -1,48 +1,82 @@
-module counting (
-    input wire clk, // master clock: 100,000,000 cycles/sec
-    input reset, // need reset as an input?
-    output wire 2_clk, // 2 Hz clock
-    output wire 1_clk, // 1 Hz clock, 1 cycle/sec
-    output wire fast_clk, // fast clock
-    output wire blink_clk // blink clock
-);
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 05/22/2024 02:33:09 PM
+// Design Name: 
+// Module Name: clock
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
 
-reg [31:0] 2_count = 0;
-reg [31:0] 1_count = 0; 
+
+module clock (
+    input clk, // master clock: 100,000,000 cycles/sec
+    input reset, // need reset as an input?
+    output clk2, // 2 Hz clock
+    output clk1, // 1 Hz clock, 1 cycle/sec
+    output fast_clk, // fast clock
+    output blink_clk // blink clock
+);
+wire clk;
+wire reset;
+reg [31:0] count2 = 0;
+reg [31:0] count1 = 0; 
 reg [31:0] fast_count = 0;
 reg [31:0] blink_count = 0;
+reg clk1 = 0;
+reg clk2 = 0;
+reg fast_clk = 0;
+reg blink_clk = 0;
+
+
 
 // 2 Hz clock
 always @(posedge clk or posedge reset) begin
     if (reset == 1) 
     begin
-        2_count <= 0;
-        2_clk <= 0; // or 1?
+        count2 <= 0;
+        clk2 <= 0; // or 1?
     end
-    else if (2_count == 25000000) begin
-        2_clk <= ~2_clk;
-        2_count <= 0;
+    else if (count2 == 25000000) begin
+        clk2 <= ~clk2;
+        count2 <= 0;
     end else begin
-        2_count <= 2_count+1;
+        count2 <= count2+1;
     end
 end
 
 // 1 Hz clock - 1 cycle per seconds
 always @(posedge clk) begin
+    $display("clock 1 Hz");
     if (reset == 1) 
     begin
-        1_count <= 0;
-        1_clk <= 0; 
+        count1 <= 0;
+        clk1 <= 0; 
     end
-    else if (1_count == 50000000) begin
-        1_clk <= ~1_clk;
-        1_count <= 0;
+    else if (count1 == 50000000) begin
+        $display("1 Hz clock toggled");
+        clk1 <= ~clk1;
+        $display("1 Hz clock toggled: %d", clk1);
+        count1 <= 0;
     end else begin
-        1_count <= 1_count+1;
+        $display("1 Hz clock incremented");
+        $display("1 Hz clock count: %d", count1);
+        count1 <= count1 +1;
     end
 end
 
-// fast clock
+// fast clock - 400Hz
 always @(posedge clk) begin
     if (reset == 1) 
     begin
@@ -63,7 +97,7 @@ always @(posedge clk) begin
     begin
         blink_count <= 0;
         blink_clk <= 0; 
-    end
+    end else if 
     (blink_count == 1250000) begin
         blink_clk <= ~blink_clk;
         blink_count <= 0;

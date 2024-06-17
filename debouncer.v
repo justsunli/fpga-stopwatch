@@ -10,6 +10,7 @@ module debouncer (
     reg sync_to_clk1;     // Second stage of the synchronizer
 
     // Synchronize the input to the clock domain to avoid metastability
+    // flip-flops
     always @(posedge clk) begin
         sync_to_clk0 <= noisy;
     end

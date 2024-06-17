@@ -1,6 +1,11 @@
+`timescale 1ns / 1ps
+
 module display_controller (
     input wire clk,
+    input wire blink_clk,
     input wire reset,
+    input wire sel,
+    input wire adjust,
     input wire [3:0] minutes_tens,
     input wire [3:0] minutes_units,
     input wire [3:0] seconds_tens,
@@ -11,30 +16,79 @@ module display_controller (
 
     reg [1:0] digit_select;
     reg [3:0] digit;
-
+    reg blink;
+    
+    initial begin
+       $display("display controller initializing");
+       digit_select <= 2'b00;
+       anode <= 4'b1110; // Initially enable the rightmost digit 
+    end
+    
+//    always@(posedge blink_clk, posedge reset) begin
+//        if (reset) begin
+//            blink <= 0;
+//        end
+//        else begin
+//            blink <= ~blink;
+//        end
+//    end
+    
     // Multiplexing between the four digits
-    always @(posedge clk or posedge reset) begin
+    always @(posedge clk, posedge reset) begin
         if (reset) begin
             digit_select <= 0;
             anode <= 4'b1110; // Initially enable the rightmost digit
-        end else begin
+        end 
+        else
+        begin
             digit_select <= digit_select + 1;
             case (digit_select)
                 2'b00: begin
-                    digit <= seconds_units;
+                    if (sel && adjust && blink_clk)begin
+                        digit <= 4'b1111;
+                    end
+                    else begin
+                        digit <= seconds_units;
+                    end
                     anode <= 4'b1110;
+                    $display("anode 0: %d", seconds_units);
                 end
                 2'b01: begin
-                    digit <= seconds_tens;
+                    if (sel && adjust && blink_clk)begin
+                        digit <= 4'b1111;
+                    end
+                    else begin
+                        digit <= seconds_tens;
+                    end
                     anode <= 4'b1101;
+                    $display("anode 1: %d", seconds_tens);
+
                 end
                 2'b10: begin
-                    digit <= minutes_units;
+                    if (!sel && adjust && blink_clk)
+                    begin
+                        digit <= 4'b1111;
+         
+                    end
+                    else begin
+                       digit <= minutes_units;
+                    end
                     anode <= 4'b1011;
+                    $display("anode 2: %d", minutes_units);
+
                 end
                 2'b11: begin
-                    digit <= minutes_tens;
+                    if (!sel && adjust && blink_clk)
+                    begin
+                        digit <= 4'b1111;
+                
+                    end
+                    else begin
+                        digit <= minutes_tens;
+                    end
                     anode <= 4'b0111;
+                    $display("anode 3: %d", minutes_tens);
+
                 end
             endcase
         end
